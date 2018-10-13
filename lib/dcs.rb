@@ -1,23 +1,32 @@
 require "dcs/version"
-require 'rtesseract'
-require 'rmagick'
+require "logger"
 
 module Dcs
+
+  def self.options
+    "--tessdata-dir #{Dir.pwd}/lib/tessdata -l digits --oem 3"
+  end
+
+  def self.command(input_path, output_path)
+    "tesseract #{input_path} stdout #{self.options} >> #{output_path}"
+  end
+
   def self.solve(image_path)
+    logger = Logger.new(STDOUT)
+    logger.info("Solving captcha for image: #{image_path}")
 
-    RTesseract.configure do |config|
-      # User only LSTM neural network engine
-      config.oem = '3'
+    @out = Tempfile.new
+    logger.info("Using this file for tesseract output: #{@out.path}")
 
-      # Path to directory with models
-      config.tessdata_dir = Dir.pwd + "/lib/tessdata"
+    cmd = self.command(image_path, @out.path)
+    logger.info("Running: #{cmd}")
+    system(self.command(image_path, @out.path))
 
-      # Use a specific model
-      config.lang = 'digits'
-    end
-
-    RTesseract.new(image_path)
-              .to_s
-              .gsub!(/[^0-9A-Za-z]/, '')
+    solution = @out.read.gsub!(/[^0-9A-Za-z]/, '')
+    logger.info("Solution: #{solution}")
+    solution
+  ensure
+    @out.unlink
+    logger.info("Terminating")
   end
 end
