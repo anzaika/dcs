@@ -1,10 +1,8 @@
-# Dcs
+# DCS
+A simple digital captcha solver.
 
-And relies on a latest version of tesseract avaialable as a package
-from
+Relies on tesseract4 LSTM feature and comes with a
+specially trained model by `https://github.com/Shreeshrii/tessdata_shreetest`
 
-```
-sudo add-apt-repository ppa:alex-p/tesseract-ocr
-```
-
-It uses a model from https://github.com/Shreeshrii/tessdata_shreetest
+You can install the latest version of tesseract on ubuntu from
+this PPA `ppa:alex-p/tesseract-ocr`
