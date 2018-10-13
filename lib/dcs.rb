@@ -4,7 +4,7 @@ require "logger"
 module Dcs
 
   def self.options
-    "--tessdata-dir #{Dir.pwd}/lib/tessdata -l digits --oem 3"
+    "--tessdata-dir lib/tessdata -l digits --oem 3"
   end
 
   def self.command(input_path, output_path)
@@ -24,6 +24,7 @@ module Dcs
 
     solution = @out.read.gsub!(/[^0-9A-Za-z]/, '')
     logger.info("Solution: #{solution}")
+
     solution
   ensure
     @out.unlink
