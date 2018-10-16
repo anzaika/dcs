@@ -19,19 +19,20 @@ module Dcs
     logger = Logger.new(STDOUT)
     logger.debug("Solving captcha for image: #{image_path}")
 
-    @out = Tempfile.new
-    logger.debug("Using this file for tesseract output: #{@out.path}")
+    solution = ''
 
-    cmd = self.command(image_path, @out.path)
-    logger.debug("Running: #{cmd}")
-    system(self.command(image_path, @out.path))
+    Tempfile.create("tessout") do |f|
+      logger.debug("Using this file for tesseract output: #{f.path}")
 
-    solution = @out.read.gsub!(/[^0-9A-Za-z]/, '')
-    logger.debug("Solution: #{solution}")
+      cmd = self.command(image_path, f.path)
+      logger.debug("Running: #{cmd}")
+      system(self.command(image_path, f.path))
 
-    solution
-  ensure
-    @out.unlink
+      solution = f.read.gsub!(/[^0-9A-Za-z]/, '')
+      logger.debug("Solution: #{solution}")
+    end
+
     logger.debug("Terminating")
+    solution
   end
 end
